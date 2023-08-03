@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         }
         multiPlayerbtn.setOnClickListener {
             singleuser = false;
-            startActivity(Intent(this, GamePlayerActivity::class.java))
+            startActivity(Intent(this, Multiplayer::class.java))
         }
     }
 }

@@ -8,11 +8,17 @@ import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlin.system.exitProcess
 
-var playerTurn = true
-class GamePlayerActivity : AppCompatActivity() {
+var isMyMove = isCodeMaker
+class OnlineMultiPlayerGameActivity : AppCompatActivity() {
 
     lateinit var player1Tv : TextView
     lateinit var player2Tv : TextView
@@ -26,6 +32,7 @@ class GamePlayerActivity : AppCompatActivity() {
     lateinit var box8Btn : Button
     lateinit var box9Btn : Button
     lateinit var resetBtn : Button
+    lateinit var turnTv : TextView
     var Player1count = 0
     var Player2count = 0
     var player1 = ArrayList<Int>()
@@ -33,10 +40,10 @@ class GamePlayerActivity : AppCompatActivity() {
     var emptyCells = ArrayList<Int>()
     var activeUser = 1
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game_player)
+        setContentView(R.layout.activity_online_multi_player_game)
+
         player1Tv = findViewById(R.id.idTvPlayer1)
         player2Tv = findViewById(R.id.idTvPlayer2)
         box1Btn = findViewById(R.id.idBtnbox1)
@@ -48,16 +55,46 @@ class GamePlayerActivity : AppCompatActivity() {
         box7Btn = findViewById(R.id.idBtnbox7)
         box8Btn = findViewById(R.id.idBtnbox8)
         box9Btn = findViewById(R.id.idBtnbox9)
+        turnTv = findViewById(R.id.idTTvTurn)
         resetBtn = findViewById(R.id.idBtnReset)
 
         resetBtn.setOnClickListener {
             reset()
         }
 
+        FirebaseDatabase.getInstance().reference.child("data").child(code).addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                var data = snapshot.value
+                if(isMyMove == true) {
+                    isMyMove = false
+                    moveOnline(data.toString(), isMyMove)
+                } else {
+                    isMyMove= true
+                    moveOnline(data.toString(), isMyMove)
+                }
+            }
 
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                reset()
+                Toast.makeText(this@OnlineMultiPlayerGameActivity, "Game Reset", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
-    private fun reset() {
+    fun reset() {
         player1.clear()
         player2.clear()
         emptyCells.clear()
@@ -82,73 +119,17 @@ class GamePlayerActivity : AppCompatActivity() {
             buttonSelected.text = ""
             player1Tv.text = "Player 1 : $Player1count"
             player2Tv.text = "Player 2 : $Player2count"
-        }
-    }
-
-    fun buttonClick(view: View) {
-        if(playerTurn) {
-            val but = view as Button
-            var cellId = 0
-            when(but.id) {
-                R.id.idBtnbox1 -> cellId = 1
-                R.id.idBtnbox2 -> cellId = 2
-                R.id.idBtnbox3 -> cellId = 3
-                R.id.idBtnbox4 -> cellId = 4
-                R.id.idBtnbox5 -> cellId = 5
-                R.id.idBtnbox6 -> cellId = 6
-                R.id.idBtnbox7 -> cellId = 7
-                R.id.idBtnbox8 -> cellId = 8
-                R.id.idBtnbox9 -> cellId = 9
+            isMyMove = isCodeMaker
+            if(isCodeMaker) {
+                FirebaseDatabase.getInstance().reference.child("data").child(code).removeValue()
             }
-            playerTurn = false
-            Handler().postDelayed(Runnable { playerTurn = true }, 600)
-            playNow(but, cellId)
         }
     }
-
-    private fun playNow(buttonSelected: Button, currCell: Int) {
+    fun moveOnline(data : String, move : Boolean) {
         val audio = MediaPlayer.create(this, R.raw.poutch)
-        if(activeUser == 1) {
-            buttonSelected.text = "X"
-            buttonSelected.setTextColor(Color.parseColor("#EC0C0C"))
-            player1.add(currCell)
-            emptyCells.add(currCell)
-            audio.start()
-            buttonSelected.isEnabled = false
-            Handler().postDelayed(Runnable {audio.release()}, 200)
-            val checkWinner = checkWinner()
-            if(checkWinner == 1) {
-                Handler().postDelayed(Runnable { reset() }, 2000)
-            }
-            else if(singleuser) {
-                Handler().postDelayed(Runnable { robot() }, 500)
-            } else {
-                activeUser = 2
-            }
-        } else {
-            buttonSelected.text = "0"
-            audio.start()
-            buttonSelected.setTextColor(Color.parseColor("#D22BB804"))
-            activeUser = 1
-            player2.add(currCell)
-            emptyCells.add(currCell)
-            Handler().postDelayed(Runnable { audio.release() }, 200)
-            buttonSelected.isEnabled = false
-            val checkWinner = checkWinner()
-            if(checkWinner == 1) {
-                Handler().postDelayed(Runnable { reset() }, 4000)
-            }
-        }
-
-
-    }
-
-    private fun robot() {
-        val rnd = (1..9).random()
-        if(emptyCells.contains(rnd)) {
-            robot()
-        } else {
-            val buttonSelected = when(rnd) {
+        if(move) {
+            var buttonSelected : Button?
+            buttonSelected = when(data.toInt()) {
                 1->box1Btn
                 2->box2Btn
                 3->box3Btn
@@ -162,22 +143,18 @@ class GamePlayerActivity : AppCompatActivity() {
                     box1Btn
                 }
             }
-            emptyCells.add(rnd)
-            val audio = MediaPlayer.create(this, R.raw.poutch)
-            audio.start()
-            Handler().postDelayed(Runnable {  audio.release()}, 500)
-            buttonSelected.text = "0"
+            buttonSelected.text = "O"
+            turnTv.text = "Turn : Player 1"
             buttonSelected.setTextColor(Color.parseColor("#D22BB804"))
-            player2.add(rnd)
+            player2.add(data.toInt())
+            emptyCells.add(data.toInt())
+            audio.start()
+            Handler().postDelayed(Runnable { audio.release() }, 200)
             buttonSelected.isEnabled = false
-            var checkWinner = checkWinner()
-            if(checkWinner == 1) {
-                Handler().postDelayed(Runnable {  reset()}, 2000)
-            }
+            checkWinner()
         }
     }
-
-    private fun checkWinner(): Int {
+    fun checkWinner() : Int{
         val audio = MediaPlayer.create(this, R.raw.success)
         if((player1.contains(1) && player1.contains(2) && player1.contains(3)) ||
             (player1.contains(1) && player1.contains(4) && player1.contains(7)) ||
@@ -190,18 +167,19 @@ class GamePlayerActivity : AppCompatActivity() {
 
             Player1count += 1
             audio.start()
-            buttonDisable() 
+            buttonDisable()
             disableReset()
             Handler().postDelayed(Runnable { audio.release() }, 4000)
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 1 Wins\n\n "+"Do you want to play again")
+            build.setMessage("You have Won the game\n\n "+"Do you want to play again")
             build.setPositiveButton("Ok"){dialog, which->
                 reset()
                 audio.release()
             }
             build.setNegativeButton("Exit"){dialog, which->
                 audio.release()
+                removeCode()
                 exitProcess(1)
             }
             Handler().postDelayed(Runnable { build.show() }, 2000)
@@ -223,7 +201,7 @@ class GamePlayerActivity : AppCompatActivity() {
             Handler().postDelayed(Runnable { audio.release() }, 4000)
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 2 Wins\n\n "+"Do you want to play again")
+            build.setMessage("Opponent have Won the game\n\n "+"Do you want to play again")
             build.setPositiveButton("Ok") {dialog, which ->
                 reset()
                 audio.release()
@@ -237,15 +215,18 @@ class GamePlayerActivity : AppCompatActivity() {
         } else if(emptyCells.contains(1) && emptyCells.contains(2) && emptyCells.contains(3) &&
             emptyCells.contains(4) && emptyCells.contains(5) && emptyCells.contains(6) &&
             emptyCells.contains(7) && emptyCells.contains(8) && emptyCells.contains(9)
-                ) {
+        ) {
 
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
             build.setMessage("Game Draw\n\n "+"Do you want to play again")
             build.setPositiveButton("Ok") {dialog, which ->
+                audio.release()
                 reset()
             }
             build.setNegativeButton("Exit") {dialog, which ->
+                audio.release()
+                removeCode()
                 exitProcess(1)
             }
             build.show()
@@ -253,17 +234,21 @@ class GamePlayerActivity : AppCompatActivity() {
         }
         return 0
     }
-
-    private fun disableReset() {
-        resetBtn.isEnabled = false
-        Handler().postDelayed(Runnable { resetBtn.isEnabled  = true}, 2200)
+    fun PlayNow(buttonSelected: Button, currCell : Int) {
+        val audio = MediaPlayer.create(this, R.raw.poutch)
+        buttonSelected.text = "X"
+        emptyCells.remove(currCell)
+        turnTv.text = "Turn : Player 2"
+        buttonSelected.setTextColor(Color.parseColor("#EC0C0C"))
+        player1.add(currCell)
+        emptyCells.add(currCell)
+        audio.start()
+        buttonSelected.isEnabled = false
+        Handler().postDelayed(Runnable { audio.release() }, 200)
+        checkWinner()
     }
 
-    private fun buttonDisable() {
-        player1.clear()
-        player2.clear()
-        emptyCells.clear()
-        activeUser = 1
+    fun buttonDisable() {
         for(i in 1..9) {
             var buttonSelected : Button
             buttonSelected = when(i) {
@@ -280,10 +265,51 @@ class GamePlayerActivity : AppCompatActivity() {
                     box1Btn
                 }
             }
-            buttonSelected.isEnabled = true
-            buttonSelected.text = ""
-            player1Tv.text = "Player 1 : $Player1count"
-            player2Tv.text = "Player 2 : $Player2count"
+            if(buttonSelected.isEnabled == true) {
+                buttonSelected.isEnabled = false
+            }
+        }
+    }
+    fun removeCode() {
+        if(isCodeMaker) {
+            FirebaseDatabase.getInstance().reference.child("codes").child(keyValue).removeValue()
+        }
+    }
+    fun disableReset() {
+        resetBtn.isEnabled = false
+        Handler().postDelayed(Runnable { resetBtn.isEnabled = true }, 2000)
+    }
+
+    override fun onBackPressed() {
+        removeCode()
+        if(isCodeMaker) {
+            FirebaseDatabase.getInstance().reference.child("data").child(code).removeValue()
+        }
+        exitProcess(0)
+    }
+    fun updateDatabase(cellId : Int) {
+        FirebaseDatabase.getInstance().reference.child("data").child(code).push().setValue(cellId)
+    }
+    fun buttonClick(view: View) {
+        if(isMyMove) {
+            val but = view as Button
+            var cellOnline = 0
+            when(but.id) {
+                R.id.idBtnbox1 -> cellOnline = 1
+                R.id.idBtnbox2 -> cellOnline = 2
+                R.id.idBtnbox3 -> cellOnline = 3
+                R.id.idBtnbox4 -> cellOnline = 4
+                R.id.idBtnbox5 -> cellOnline = 5
+                R.id.idBtnbox6 -> cellOnline = 6
+                R.id.idBtnbox7 -> cellOnline = 7
+                R.id.idBtnbox8 -> cellOnline = 8
+                R.id.idBtnbox9 -> cellOnline = 9
+                else -> { cellOnline = 0 }
+            }
+            playerTurn = false
+            Handler().postDelayed(Runnable { playerTurn = true }, 600)
+            PlayNow(but, cellOnline)
+            updateDatabase(cellOnline)
         }
     }
 }
