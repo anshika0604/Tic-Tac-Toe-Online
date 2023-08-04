@@ -208,6 +208,7 @@ class OnlineMultiPlayerGameActivity : AppCompatActivity() {
             }
             build.setNegativeButton("Exit") {dialog, which ->
                 audio.release()
+                removeCode()
                 exitProcess(1)
             }
             Handler().postDelayed(Runnable { build.show() }, 2000)
@@ -250,8 +251,7 @@ class OnlineMultiPlayerGameActivity : AppCompatActivity() {
 
     fun buttonDisable() {
         for(i in 1..9) {
-            var buttonSelected : Button
-            buttonSelected = when(i) {
+            val buttonSelected = when(i) {
                 1->box1Btn
                 2->box2Btn
                 3->box3Btn
