@@ -80,8 +80,8 @@ class GamePlayerActivity : AppCompatActivity() {
             }
             buttonSelected.isEnabled = true
             buttonSelected.text = ""
-            player1Tv.text = "Player 1 : $Player1count"
-            player2Tv.text = "Player 2 : $Player2count"
+            player1Tv.text = "You : $Player1count"
+            player2Tv.text = "Opponent : $Player2count"
         }
     }
 
@@ -195,7 +195,7 @@ class GamePlayerActivity : AppCompatActivity() {
             Handler().postDelayed(Runnable { audio.release() }, 4000)
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 1 Wins\n\n "+"Do you want to play again")
+            build.setMessage("You Won the Game\n\n "+"Do you want to play again")
             build.setPositiveButton("Ok"){dialog, which->
                 reset()
                 audio.release()
@@ -223,7 +223,7 @@ class GamePlayerActivity : AppCompatActivity() {
             Handler().postDelayed(Runnable { audio.release() }, 4000)
             val build = AlertDialog.Builder(this)
             build.setTitle("Game Over")
-            build.setMessage("Player 2 Wins\n\n "+"Do you want to play again")
+            build.setMessage("Opponent Won the Game\n\n "+"Do you want to play again")
             build.setPositiveButton("Ok") {dialog, which ->
                 reset()
                 audio.release()
@@ -282,8 +282,8 @@ class GamePlayerActivity : AppCompatActivity() {
             }
             buttonSelected.isEnabled = true
             buttonSelected.text = ""
-            player1Tv.text = "Player 1 : $Player1count"
-            player2Tv.text = "Player 2 : $Player2count"
+            player1Tv.text = "You : $Player1count"
+            player2Tv.text = "Opponent: $Player2count"
         }
     }
 }

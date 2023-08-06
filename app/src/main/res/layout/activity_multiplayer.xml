@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/image3"
     tools:context=".Multiplayer">
 
     <TextView
@@ -13,11 +14,14 @@
         android:textAlignment="center"
         android:gravity="center"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:fontFamily="@font/calligraffitti"
         android:padding="10dp"
-        android:textSize="25sp"
-        android:textColor="@color/black"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
         android:id="@+id/idTvHead"
-        android:layout_marginTop="50dp" />
+        />
 
     <Button
         android:layout_width="wrap_content"
@@ -26,6 +30,13 @@
         android:textAllCaps="false"
         android:id="@+id/idBtnOnline"
         android:layout_below="@+id/idTvHead"
+        android:textColor="@color/black"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="20dp"
+        android:background="@drawable/custom_button2"
+        android:textSize="36dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp" />
 
@@ -35,9 +46,16 @@
         android:text="Offline"
         android:textAllCaps="false"
         android:id="@+id/idBtnOffline"
+        android:textColor="@color/black"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="20dp"
         android:layout_below="@+id/idBtnOnline"
+        android:textSize="36dp"
+        android:background="@drawable/custom_button2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="80dp" />
 
 
 </RelativeLayout>

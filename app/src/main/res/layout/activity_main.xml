@@ -5,41 +5,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/image3"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/idtvHead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:fontFamily="@font/calligraffitti"
+        android:gravity="center"
+        android:padding="5dp"
         android:text="Tic Tac Toe"
         android:textAlignment="center"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:padding="5dp" />
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textStyle="bold" />
 
     <Button
+        android:id="@+id/idBtnSinglePlayer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Single Player"
-        android:textAllCaps="false"
-        android:id="@+id/idBtnSinglePlayer"
         android:layout_below="@+id/idtvHead"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/custom_button"/>
+        android:layout_marginTop="50dp"
+        android:textColor="@color/black"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="20dp"
+        android:background="@drawable/custom_button2"
+        android:text="Single Player"
+        android:textAllCaps="false"
+        android:textSize="32dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Multi Player"
         android:textAllCaps="false"
+        android:textSize="33dp"
+        android:textColor="@color/black"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="20dp"
         android:id="@+id/idBtnMultiPlayer"
         android:layout_below="@+id/idBtnSinglePlayer"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/custom_button"/>
+        android:layout_marginTop="65dp"
+        android:background="@drawable/custom_button2"/>
 
 </RelativeLayout>

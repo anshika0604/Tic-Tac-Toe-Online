@@ -117,8 +117,9 @@ class OnlineMultiPlayerGameActivity : AppCompatActivity() {
             }
             buttonSelected.isEnabled = true
             buttonSelected.text = ""
-            player1Tv.text = "Player 1 : $Player1count"
-            player2Tv.text = "Player 2 : $Player2count"
+            player1Tv.text = "You : $Player1count"
+            player2Tv.text = "Opponent : $Player2count"
+            turnTv.text = "Turn"
             isMyMove = isCodeMaker
             if(isCodeMaker) {
                 FirebaseDatabase.getInstance().reference.child("data").child(code).removeValue()
@@ -144,7 +145,7 @@ class OnlineMultiPlayerGameActivity : AppCompatActivity() {
                 }
             }
             buttonSelected.text = "O"
-            turnTv.text = "Turn : Player 1"
+            turnTv.text = "Turn : You"
             buttonSelected.setTextColor(Color.parseColor("#D22BB804"))
             player2.add(data.toInt())
             emptyCells.add(data.toInt())
@@ -239,7 +240,7 @@ class OnlineMultiPlayerGameActivity : AppCompatActivity() {
         val audio = MediaPlayer.create(this, R.raw.poutch)
         buttonSelected.text = "X"
         emptyCells.remove(currCell)
-        turnTv.text = "Turn : Player 2"
+        turnTv.text = "Turn : Opponent"
         buttonSelected.setTextColor(Color.parseColor("#EC0C0C"))
         player1.add(currCell)
         emptyCells.add(currCell)
